@@ -1,39 +1,40 @@
 using System;
-using NUnit.Framework;
+using LinqSpecs.Tests.Helpers;
+using Xunit;
 
 namespace LinqSpecs.Tests
 {
-	[TestFixture]
-	public class AdHocSpecificationTests
-	{
-        [Test]
+
+    public class AdHocSpecificationTests
+    {
+        [Fact]
         public void Constructor_should_throw_exception_when_argument_is_null()
         {
             Assert.Throws<ArgumentNullException>(() => new AdHocSpecification<string>(null));
         }
 
-        [Test]
-		public void Simple_adhoc_should_work()
-		{
-			var specification = new AdHocSpecification<string>(n => n.StartsWith("J"));
+        [Fact]
+        public void Simple_adhoc_should_work()
+        {
+            var specification = new AdHocSpecification<string>(n => n.StartsWith("J"));
 
             var result = new SampleRepository().Find(specification);
 
-            CollectionAssert.Contains(result, "Jose");
-            CollectionAssert.Contains(result, "Julian");
-            CollectionAssert.DoesNotContain(result, "Manuel");
-		}
+            Assert.Contains("Jose", result);
+            Assert.Contains("Julian", result);
+            Assert.DoesNotContain("Manuel", result);
+        }
 
-        [Test]
+        [Fact]
         public void Should_be_serializable()
         {
             var spec = new AdHocSpecification<string>(n => n == "it works");
 
-            var deserializedSpec = Helpers.SerializeAndDeserialize(spec);
+            var deserializedSpec = Helpers.Helpers.SerializeAndDeserialize(spec);
 
-            Assert.That(deserializedSpec, Is.InstanceOf<AdHocSpecification<string>>());
-            Assert.That(deserializedSpec.ToExpression().Compile().Invoke("it works"), Is.True);
-            Assert.That(deserializedSpec.ToExpression().Compile().Invoke("it fails"), Is.False);
+            Assert.IsType<AdHocSpecification<string>>(deserializedSpec);
+            Assert.True(deserializedSpec.ToExpression().Compile().Invoke("it works"));
+            Assert.False(deserializedSpec.ToExpression().Compile().Invoke("it fails"));
         }
     }
 }

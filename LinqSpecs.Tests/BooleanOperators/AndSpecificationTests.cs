@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using NUnit.Framework;
+using LinqSpecs.BooleanOperators;
+using LinqSpecs.Tests.Helpers;
+using Xunit;
 
-namespace LinqSpecs.Tests
+namespace LinqSpecs.Tests.BooleanOperators
 {
 	//Note; no matter if you are using & operator, or && operator.. both works as an &&.
 
-	[TestFixture]
+	
 	public class AndSpecificationTests
 	{
-        [Test]
+        [Fact]
         public void Constructor_should_throw_exception_when_argument_is_null()
         {
             var spec = new AdHocSpecification<string>(x => x.Length == 1);
@@ -18,7 +20,7 @@ namespace LinqSpecs.Tests
             Assert.Throws<ArgumentNullException>(() => new AndSpecification<string>(null, spec));
         }
 
-        [Test]
+        [Fact]
 		public void And_should_work()
 		{
 			var startWithJ = new AdHocSpecification<string>(n => n.StartsWith("J"));
@@ -27,25 +29,25 @@ namespace LinqSpecs.Tests
 
 			IEnumerable<string> result = new SampleRepository().Find(specfication);
 
-            CollectionAssert.Contains(result, "Jose");
-            CollectionAssert.DoesNotContain(result, "Julian");
-            CollectionAssert.DoesNotContain(result, "Manuel");
+            Assert.Contains("Jose", result);
+            Assert.DoesNotContain("Julian", result);
+            Assert.DoesNotContain("Manuel",result );
 		}
 
-        [Test]
+        [Fact]
         public void Equals_returns_true_when_both_sides_are_equals()
         {
             var s1 = new AdHocSpecification<string>(x => x.Length > 1);
             var s2 = new AdHocSpecification<string>(x => x.Length > 2);
             var spec = s1 & s2;
 
-            Assert.IsInstanceOf<AndSpecification<string>>(spec);
-            Assert.IsTrue(spec.Equals(spec));
-            Assert.IsTrue(spec.Equals(s1 & s2));
-            Assert.IsTrue(spec.Equals(s1 && s2)); // & or && both operators behave as &&
+            Assert.IsType<AndSpecification<string>>(spec);
+            Assert.True(spec.Equals(spec));
+            Assert.True(spec.Equals(s1 & s2));
+            Assert.True(spec.Equals(s1 && s2)); // & or && both operators behave as &&
         }
 
-        [Test]
+        [Fact]
         public void Equals_returns_false_when_both_sides_are_not_equals()
         {
             var s1 = new AdHocSpecification<string>(x => x.Length > 1);
@@ -53,17 +55,17 @@ namespace LinqSpecs.Tests
             var s3 = new AdHocSpecification<string>(x => x.Length > 3);
             var spec = s1 & s2;
 
-            Assert.IsInstanceOf<AndSpecification<string>>(spec);
-            Assert.IsFalse(spec.Equals(null));
-            Assert.IsFalse(spec.Equals(10));
-            Assert.IsFalse(spec.Equals(s1));
-            Assert.IsFalse(spec.Equals(s2));
-            Assert.IsFalse(spec.Equals(s2 & s1)); // AndAlso is not commutable
-            Assert.IsFalse(spec.Equals(s1 & s3));
-            Assert.IsFalse(spec.Equals(s3 & s2));
+            Assert.IsType<AndSpecification<string>>(spec);
+            Assert.False(spec.Equals(null));
+            Assert.False(spec.Equals(10));
+            Assert.False(spec.Equals(s1));
+            Assert.False(spec.Equals(s2));
+            Assert.False(spec.Equals(s2 & s1)); // AndAlso is not commutable
+            Assert.False(spec.Equals(s1 & s3));
+            Assert.False(spec.Equals(s3 & s2));
         }
 
-        [Test]
+        [Fact]
         public void GetHashCode_retuns_same_value_for_equal_specifications()
         {
             var s1 = new AdHocSpecification<string>(x => x.Length > 1);
@@ -72,23 +74,23 @@ namespace LinqSpecs.Tests
             var spec1 = s1 & s2 & s3;
             var spec2 = s1 & s2 & s3;
 
-            Assert.IsInstanceOf<AndSpecification<string>>(spec1);
-            Assert.IsInstanceOf<AndSpecification<string>>(spec2);
-            Assert.AreEqual(spec1.GetHashCode(), spec2.GetHashCode());
+            Assert.IsType<AndSpecification<string>>(spec1);
+            Assert.IsType<AndSpecification<string>>(spec2);
+            Assert.Equal(spec1.GetHashCode(), spec2.GetHashCode());
         }
 
-        [Test]
+        [Fact]
         public void Should_be_serializable()
         {
             var sourceSpec1 = new AdHocSpecification<string>(n => n.StartsWith("it"));
             var sourceSpec2 = new AdHocSpecification<string>(n => n.EndsWith("works"));
             var spec = new AndSpecification<string>(sourceSpec1, sourceSpec2);
 
-            var deserializedSpec = Helpers.SerializeAndDeserialize(spec);
+            var deserializedSpec = Helpers.Helpers.SerializeAndDeserialize(spec);
 
-            Assert.That(deserializedSpec, Is.InstanceOf<AndSpecification<string>>());
-            Assert.That(deserializedSpec.ToExpression().Compile().Invoke("it works"), Is.True);
-            Assert.That(deserializedSpec.ToExpression().Compile().Invoke("it fails"), Is.False);
+            Assert.IsType<AndSpecification<string>>(deserializedSpec);
+            Assert.True(deserializedSpec.ToExpression().Compile().Invoke("it works"));
+            Assert.False(deserializedSpec.ToExpression().Compile().Invoke("it fails"));
         }
     }
 }

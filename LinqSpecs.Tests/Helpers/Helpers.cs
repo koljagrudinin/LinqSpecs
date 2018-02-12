@@ -1,10 +1,8 @@
 ﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using NUnit.Framework;
 
-namespace LinqSpecs.Tests
+namespace LinqSpecs.Tests.Helpers
 {
-    [TestFixture]
     public class Helpers
     {
         public static T SerializeAndDeserialize<T>(T obj)

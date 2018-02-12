@@ -1,7 +1,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace LinqSpecs
+namespace LinqSpecs.BooleanOperators
 {
     /// <summary>
     /// Negates a source specification.

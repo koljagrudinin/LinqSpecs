@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using LinqSpecs.ExpressionCombining;
 
-namespace LinqSpecs
+namespace LinqSpecs.BooleanOperators
 {
     /// <summary>
     /// Combines two specifications by using logical OR operation.
