@@ -213,7 +213,7 @@ namespace LinqSpecs.Core.ExpressionSerialization
             //MethodBuilder toStringBuilder = anonTypeBuilder.DefineMethod();
             //MethodBuilder getHashCodeBuilder = anonTypeBuilder.DefineMethod();
 
-            Type anonType = anonTypeBuilder.CreateType();
+            Type anonType = anonTypeBuilder.CreateTypeInfo();
             _anonymousTypes.Add(id, anonType);
             return anonType;
         }
